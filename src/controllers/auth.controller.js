@@ -17,12 +17,18 @@ const registerPage = (req, res) => {
 const register = async (req, res) => {
     const { username, password, confirm, role } = req.body;
 
-    if (!username || !password || password !== confirm) {
+    if (!username || !password || !confirm) {
         return res.redirect("/register?errors=Invalid registration details");
+    }
+    if(password !== confirm){
+        return res.redirect("/register?errors=Passwords do not match");
+    }
+    if(role !== "user" && role !=="admin"){
+        return res.redirect("/register?errors=Invalid role");
     }
 
     await createUser(username, password, role);
-    res.redirect("/login");
+   return  res.redirect("/login");
 };
 
 const login = async (req, res) => {
