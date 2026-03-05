@@ -1,4 +1,4 @@
-import { createUser, findUserByUsername } from "../services/user.service.js";
+import { createUser, findUserByUsername, validatePassword } from "../services/user.service.js";
 
 const loginPage = (req, res) => {
     res.render("login", {
@@ -34,13 +34,50 @@ const register = async (req, res) => {
 const login = async (req, res) => {
     const { username, password } = req.body;
 
-    const user = await findUserByUsername(username);
+    if(!username || !password) {
+        return res.redirect("/login?errors=All fields required");
+    }
 
-    if (!user || user.password !== password) {
+    const user = await findUserByUsername(username);
+    if (!user) {
         return res.redirect("/login?errors=Invalid credentials");
     }
 
+    const isValid =await validatePassword(password, user.password);
+    if(!isValid){
+        return res.redirect("/login?errors=Invalid credentials");
+    }
+
+    req.session.user = {
+        userId: user.userId,
+        username: user.username,
+        role: user.role
+    }
+
     res.redirect("/dashboard");
+};
+
+export const isLoggedIn = (req, res, next) => {
+    if(!req.user) {
+        return res.redirect("/login?errors=Please log in first");
+    }
+    next();
+};
+
+//wrap the middleware with a function that accepts a role
+export const hasRole = (role) => {
+    return (req, res, next) => {
+        if(!req.user || req.user.role !== role) {
+            return res.redirect("/login?errors=Access denied");
+        }
+        next();
+    };
+};
+
+export const logout = (req, res) => {
+    req.session.destroy(() => {
+        return res.redirect("/login");
+    });
 };
 
 export default { loginPage, registerPage, register, login };

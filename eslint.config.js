@@ -39,11 +39,11 @@ export default [
             "valid-typeof": "error",
 
             /* suggestions */
-            "arrow-body-style": ["warn", "as-needed"],
+            // "arrow-body-style": ["warn", "as-needed"],
             "block-scoped-var": "error",
             "camelcase": "warn",
             "complexity": "warn",
-            "consistent-return": "error",
+            // "consistent-return": "error",
             "eqeqeq": "warn",
             "default-param-last": "error",
             "default-case-last": "error",

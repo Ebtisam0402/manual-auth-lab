@@ -6,6 +6,10 @@ export const hashPassword = async (plainPassword) => {
     return await bcrypt.hash(plainPassword, saltRounds);
 }
 
+export const validatePassword = async (plainPassword, storedHash) => {
+    return await bcrypt.compare(plainPassword, storedHash);
+};
+
 export const findUserByUsername = async (username) => {
     const [results] = await db.query(
         "SELECT userId, username, password, role FROM users WHERE username = ? LIMIT 1",
